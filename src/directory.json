@@ -1,0 +1,32 @@
+{
+  "categories" : [
+    {
+      "displayName"  : "Test Category 1",
+      "locationName" : "test-category-1",
+      "articles"     : [
+        {
+          "displayName"  : "Test Article 1",
+          "locationName" : "test-article-1"
+        },
+        {
+          "displayName"  : "Test Article 2",
+          "locationName" : "test-article-2"
+        }
+      ]
+    },
+    {
+      "displayName"  : "Test Category 2",
+      "locationName" : "test-category-2",
+      "articles"     : [
+        {
+          "displayName"  : "Test Article 1",
+          "locationName" : "test-article-3"
+        },
+        {
+          "displayName"  : "Test Article 2",
+          "locationName" : "test-article-4"
+        }
+      ]
+    }
+  ]
+}

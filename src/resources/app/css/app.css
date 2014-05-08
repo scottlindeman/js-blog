@@ -1,0 +1,43 @@
+/*******************************************************************************
+ * MAIN PAGE
+ ******************************************************************************/
+
+/*HEADER*/
+
+header#main-page-header {
+  background-color: #428bca;
+  height: 200px;
+  margin: 0px 0px 20px;
+}
+
+header#main-page-header > div > h1 {
+  font-size: 64px;
+  margin-top: 119px;
+}
+
+header#main-page-header > div > h1 > a,
+header#main-page-header > div > h1 > a:hover,
+header#main-page-header > div > h1 > a:visited {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/*CONTENT*/
+
+div#main-page-content.all-categories > section.categories > article.bacat {
+  overflow: hidden;
+  margin: 15px 0px;
+}
+
+div#main-page-content.all-categories > section.categories > article.bacat > h3 {
+  margin: -24px -24px 14px -24px;
+  padding: 14px 0px 14px 24px;
+  border-bottom: 1px solid #ddd;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  background-color: #ddb;
+}
+
+div#main-page-content.all-categories > section.categories > article.bacat > div.baart {
+  margin: 0px 10px;
+}
