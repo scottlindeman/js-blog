@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Article Page</title>
+    <title>Category Page</title>
 
     <link type="text/css" rel="stylesheet" href="/resources/vendor/css/bootstrap.css" />
     <link type="text/css" rel="stylesheet" href="/resources/app/css/app.css" />
@@ -14,16 +14,22 @@
   </head>
 
   <body>
-    <header id="article-header" class="blog-header page-header">
+    
+    <header id="category-page-header" class="blog-header page-header">
       <div class="container">
         <h1>
           <a href="/">Blog Title</a>
         </h1>
       </div>
     </header>
-    
-    <div class="article">
-      
+
+    <div class="category">
     </div>
+
+    <script type="text/javascript">
+      $(function () {
+        BlogApp.Service.loadDirectory();
+      });
+    </script>
   </body>
 </html>

@@ -3,30 +3,83 @@ $(function () {
   var ServiceContainer, ResponseHandlers, Parsers;
 
   ResponseHandlers = {
+    noneFunc : function () {},
+    
     Directory : {
-      done : function (opts) {
-        return function(data, textStatus, jqXHR) {
-          var cats = data.categories.map(BlogApp.Model.jsonToCategory);
-          if (opts.maxCats > 0)
-            cats = cats.slic(0,opts.maxCats);
-          if (opts.maxArts > 0) {
+      
+      /**
+       * Handles the directory response when called from the main page
+       * @namespace ResponseHandlers.Directory
+       * @param {Object} opts
+       * @return {Function}
+       */
+      mainDone : function (opts) {
+        if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.HOME) {
+          return function (data, textStatus, jqXHR) {
+            var cats = data.categories;
+            
+            if (opts.maxCats > 0)
+              cats = cats.slice(0,opts.maxCats);
+            
+            if (opts.maxArts > 0)
+              cats = cats.map(BlogApp.Model.jsonToCategory(opts.maxArts));
+            else
+              cats = cats.map(BlogApp.Model.jsonToCategory());
+          
             cats.forEach(function (c, idx, arr) {
-              c.articles = c.articles.slice(0,opts.maxArts);
+              c.renderCondensed();
             });
-          }
-          cats.forEach(function (c, idx, arr) {
-            c.renderCondensed();
-          });
-        };
+            BlogApp.Model.setupArticleHover();
+          };
+        }
+        else
+          return ResponseHandlers.noneFunc;
       },
+
+      /**
+       * Handles the directory response when called from the category page
+       * @namespace ResponseHandlers.Directory
+       * @param {Object} opts
+       * @return {Function}
+       */
+      categoryDone : function (opts) {
+        if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.CATEGORY) {
+          return function (data, textStatus, jqXHR) {
+            var cat = Parsers.Directory.parseQueryString();
+            console.log(cat);
+            for (var i=0;i<data.categories.length;i++) {
+              var c = data.categories[i];
+              if (c.locationName === cat.bacat) {
+                if (opts.maxArts > 0)
+                  BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderPage();
+                else
+                  BlogApp.Model.jsonToCategory()(c).renderPage();
+                break;
+              }
+            }
+          };
+        }
+        else
+          return ResponseHandlers.noneFunc;
+      },
+      
+      /**
+       * Handles the directory response on fail
+       * @namespace ResponseHandlers.Directory
+       * @param {Object} opts
+       * @return {Function}
+       */
       fail : function (opts) {
-        return function(jqXHR, textStatus, errorThrown) {};
+        return function(jqXHR, textStatus, errorThrown) {
+          console.error(errorThrown);
+        };
       }
     }
   };
 
   Parsers = {
     base : function (opts, defaultOpts) {
+      opts = opts || {};
       var returnOpts = {};
       for (key in defaultOpts) {
         if (opts[key] !== undefined)
@@ -41,9 +94,20 @@ $(function () {
       parseOpts : function(opts) {
         return Parsers.base(opts, Parsers.Directory.defaultOpts);
       },
+      
       defaultOpts : {
         maxCats : 0,
         maxArts : 0
+      },
+
+      parseQueryString : function () {
+        var params = {}, pairs;
+        pairs = BlogApp.Util.getQueryString().split("&");
+        pairs.forEach(function (p, idx, arr) {
+          var pair = p.split("=");
+          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        });
+        return params;
       }
     }
   };
@@ -53,7 +117,6 @@ $(function () {
     Service : {
 
       loadDirectory : function (opts) {
-        opts = opts || {};
         opts = Parsers.Directory.parseOpts(opts);
         $.ajax({
           url : BlogApp.Util.DIRPATH,
@@ -61,7 +124,8 @@ $(function () {
           dataType : "json",
           cache : false
         })
-          .done(ResponseHandlers.Directory.done(opts))
+          .done(ResponseHandlers.Directory.mainDone(opts))
+          .done(ResponseHandlers.Directory.categoryDone(opts))
           .fail(ResponseHandlers.Directory.fail(opts));
       }
       

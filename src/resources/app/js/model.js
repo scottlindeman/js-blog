@@ -10,17 +10,20 @@ $(function () {
        * @namespace BlogApp.Model
        * @param {String} displayName
        * @param {String} locationName
+       * @param {String} catLocationName
        * @param {String} description
        */
       //Add img source
-      Article : function (displayName, locationName, description) {
+      Article : function (displayName, locationName, catLocationName, description) {
         this.displayName = displayName;
         this.locationName = locationName;
+        this.catLocationName = catLocationName;
         this.description = description;
         this.Render.Condensed.elem = "div";
         this.Render.Condensed.classes = ["pull-left"];
         this.imgSrc = "http://www.gemologyproject.com/wiki/images/5/5f/Placeholder.jpg";
         this.modelType = "baart";
+        this.linkPage = "article.html";
       },
 
       /**
@@ -39,7 +42,11 @@ $(function () {
         this.Render.Condensed.at = "section.categories";
         this.Render.Condensed.elem = "article";
         this.Render.Condensed.classes = ["well", "well-lg"];
+        this.Render.Page.at = "div.category";
+        this.Render.Page.elem = "section";
+        this.Render.Page.classes = ["container"];
         this.modelType = "bacat";
+        this.linkPage = "category.html";
       },
 
       /**
@@ -50,10 +57,13 @@ $(function () {
        * @param {Array} arr
        * @return {BlogApp.Model.Article}
        */
-      jsonToArticle : function (jsonArticle, idx, arr) {
-        return new BlogApp.Model.Article(jsonArticle.displayName,
+      jsonToArticle : function (catLocationName) {
+        return function (jsonArticle, idx, arr) {
+          return new BlogApp.Model.Article(jsonArticle.displayName,
                                          jsonArticle.locationName,
+                                         catLocationName,
                                          jsonArticle.description);
+        };
       },
 
       /**
@@ -64,11 +74,50 @@ $(function () {
        * @param {Array} arr
        * @return {BlogApp.Model.Category}
        */
-      jsonToCategory : function (jsonCategory, idx, arr) {
-        return new BlogApp.Model.Category(jsonCategory.displayName,
-                                          jsonCategory.locationName,
-                                          jsonCategory.description,
-                                          jsonCategory.articles.map(BlogApp.Model.jsonToArticle));
+      jsonToCategory : function (maxArt) {
+        return function (jsonCategory, idx, arr) {
+          var arts = jsonCategory.articles;
+          if (maxArt !== undefined && maxArt > 0)
+            arts = arts.slice(0, maxArt);
+          return new BlogApp.Model.Category(jsonCategory.displayName,
+                                            jsonCategory.locationName,
+                                            jsonCategory.description,
+                                            arts.map(BlogApp.Model.jsonToArticle(jsonCategory.locationName)));
+        };
+      },
+
+      setupArticleHover : function () {
+        var scrollInterval, scrollIntervalLength = 25;
+
+        function performArticleAnimation (scrollArea, increment) {
+          scrollArea.animate({"margin-left" : increment}, 10);
+        }
+
+        function stopAnimation () {
+          scrollInterval && window.clearInterval(scrollInterval);
+        }
+        
+        $("div.browse.pull-right").hover(
+          function () {
+            var scroll = $(this).parent().find("div.scroll");
+            scrollInterval = window.setInterval(function () {
+              performArticleAnimation(scroll, "-=3px");
+            },
+              scrollIntervalLength
+            );
+          },
+          stopAnimation);
+        
+        $("div.browse.pull-left").hover(
+          function () {
+            var scroll = $(this).parent().find("div.scroll");
+            scrollInterval = window.setInterval(function () {
+              performArticleAnimation(scroll, "+=3px");
+            },
+              scrollIntervalLength
+            );
+          },
+          stopAnimation);
       }
     }
   };
@@ -154,6 +203,20 @@ $(function () {
     }, this);
   };
 
+  /**
+   * Creates the a tag for this BaseModel
+   * @namespace BaseModel
+   * @param {Object} queries
+   * @param {String} text
+   * @return {String}
+   */
+  BaseModel.prototype.createLink = function (queries, text) {
+    var aTag = "<a href='"+this.linkPage;
+    aTag += "?"+$.param(queries);
+    aTag += "' >"+text+"</a>";
+    return aTag;
+  };
+
   /*****************************************************************************
    * ARTICLE CLASS METHOD DEFINITIONS
    ****************************************************************************/
@@ -164,9 +227,10 @@ $(function () {
    * @namespace BlogApp.Model.Article
    * @param {String} bacat
    */
-  ModelContainer.Model.Article.prototype.renderCondensed = function(bacat) {
+  ModelContainer.Model.Article.prototype.renderCondensed = function (bacat) {
     var baart = this.elemTag(this.Render.Condensed.elem);
-    baart += "<img src='"+this.imgSrc+"' width='200' height='200' />";
+    baart += this.createLink({bacat : this.catLocationName, baart : this.locationName},
+                             "<img src='"+this.imgSrc+"' width='200' height='200' />");
     baart += this.closeElemTag(this.Render.Condensed.elem);
     $(bacat).append(baart);
     this.addClasses(this.Render.Condensed.classes);
@@ -181,20 +245,52 @@ $(function () {
    * Renders the condensed version of this Category
    * @namespace BlogApp.Model.Category
    */
-  ModelContainer.Model.Category.prototype.renderCondensed = function() {
+  ModelContainer.Model.Category.prototype.renderCondensed = function () {
+    
     var bacat = this.elemTag(this.Render.Condensed.elem);
-    bacat += "<h3>"+this.displayName+"</h3>";
+    bacat += "<h3>"+this.createLink({bacat : this.locationName},
+                                    this.displayName)+"</h3>";
+    bacat += "<div class='browse pull-left glyphicon glyphicon-chevron-left' />";
+    bacat += "<div class='articles'><div class='scroll' /></div>";
+    bacat += "<div class='browse pull-right glyphicon glyphicon-chevron-right' />";
     bacat += this.closeElemTag(this.Render.Condensed.elem);
     
     $(this.Render.Condensed.at).append(bacat);
     this.articles.forEach(function(baart, idx, arr) {
+      baart.renderCondensed(this.id(true)+" div.articles div.scroll");
+    }, this);
+    this.addClasses(this.Render.Condensed.classes);
+  };
+
+  /**
+   * Renders the page version of this category
+   * @namespace BlogApp.Model.Category
+   */
+  ModelContainer.Model.Category.prototype.renderPage = function () {
+    
+    var bacat = this.elemTag(this.Render.Page.elem);
+    bacat += "<div class='page-header'><h1>"+this.displayName+"</h1></div>";
+    bacat += this.closeElemTag(this.Render.Page.elem);
+    
+    $(this.Render.Page.at).append(bacat);
+    this.articles.forEach(function (baart, idx, arr) {
       baart.renderCondensed(this.id(true));
     }, this);
-    this.addClasses(['well', 'well-lg']);
+    this.addClasses(this.Render.Page.classes);
   };
   
   
   $.extend(BlogApp, ModelContainer);
 });
+
+
+
+
+
+
+
+
+
+
 
 

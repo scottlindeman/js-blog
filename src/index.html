@@ -15,7 +15,7 @@
 
   <body>
 
-    <header id="main-page-header" class="page-header">
+    <header id="main-page-header" class="blog-header page-header">
       <div class="container">
         <h1>
           <a href="/">Blog Title</a>
@@ -32,6 +32,11 @@
       </div>
       
       <footer></footer>
+      <script type="text/javascript">
+        $(function () {
+          BlogApp.Service.loadDirectory();
+        });
+      </script>
     </div>
     
   </body>
