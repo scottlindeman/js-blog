@@ -48,7 +48,7 @@ div#main-page-content.all-categories > section.categories > article.bacat > div.
   position: absolute;
   margin-left: 105px;
   overflow: hidden;
-  width: 870px;
+  width: 880px;
 }
 
 div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll {
@@ -58,4 +58,11 @@ div#main-page-content.all-categories > section.categories > article.bacat > div.
 
 div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.baart {
   margin: 0px 10px;
+}
+
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.baart.art-divider {
+  width: 10px;
+  height: 180px;
+  border-left: 1px dashed #aaa;
+  margin: 10px;
 }

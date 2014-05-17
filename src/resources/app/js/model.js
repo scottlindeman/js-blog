@@ -21,7 +21,10 @@ $(function () {
         this.description = description;
         this.Render.Condensed.elem = "div";
         this.Render.Condensed.classes = ["pull-left"];
-        this.imgSrc = "http://www.gemologyproject.com/wiki/images/5/5f/Placeholder.jpg";
+        this.Render.Sidebar.at = "ul.sidebar-articles";
+        this.Render.Sidebar.elem = "li";
+        this.Render.Sidebar.classes = ["baart"];
+        this.imgSrc = BlogApp.Util.IMAGEPATH+"default.png";
         this.modelType = "baart";
         this.linkPage = "article.html";
       },
@@ -45,6 +48,9 @@ $(function () {
         this.Render.Page.at = "div.category";
         this.Render.Page.elem = "section";
         this.Render.Page.classes = ["container"];
+        this.Render.Sidebar.at = "div.sidebar";
+        this.Render.Sidebar.elem = "h3";
+        this.Render.Sidebar.classes = ["bacat"];
         this.modelType = "bacat";
         this.linkPage = "category.html";
       },
@@ -96,26 +102,28 @@ $(function () {
         function stopAnimation () {
           scrollInterval && window.clearInterval(scrollInterval);
         }
+
+        function startAnimation (browseButton, increment) {
+          var scroll = browseButton.parent().find("div.scroll");
+          if (scroll.children().length >= BlogApp.Util.WINDOWSIZE) {
+            if (parseInt(scroll.css("margin-left")) >= -5) {
+              
+            }
+            scrollInterval = window.setInterval(function () {
+              performArticleAnimation(scroll, increment);
+            }, scrollIntervalLength);
+          }
+        }
         
         $("div.browse.pull-right").hover(
           function () {
-            var scroll = $(this).parent().find("div.scroll");
-            scrollInterval = window.setInterval(function () {
-              performArticleAnimation(scroll, "-=3px");
-            },
-              scrollIntervalLength
-            );
+            startAnimation($(this), "-=3px");
           },
           stopAnimation);
         
         $("div.browse.pull-left").hover(
           function () {
-            var scroll = $(this).parent().find("div.scroll");
-            scrollInterval = window.setInterval(function () {
-              performArticleAnimation(scroll, "+=3px");
-            },
-              scrollIntervalLength
-            );
+            startAnimation($(this), "+=3px");
           },
           stopAnimation);
       }
@@ -129,6 +137,7 @@ $(function () {
     this.displayName = "No Display Name";
     this.locationName = "no-location-name";
     this.description = "description";
+    this.scrubKeywords = ["_pre_", "_post_"];
     this.Render = {
       Page : {
         at : "",
@@ -161,6 +170,19 @@ $(function () {
       return id;
     else
       return "#"+id;
+  };
+
+  /**
+   * Removes certain keywords from the locationName
+   * for use when linking.
+   * @return {String}
+   */
+  BaseModel.prototype.scrubbedLocationName = function () {
+    var newLocationName=this.locationName, i;
+    for (i=0;i<this.scrubKeywords.length;i++) {
+      newLocationName = newLocationName.replace(this.scrubKeywords[i], "");
+    }
+    return newLocationName;
   };
 
   /**
@@ -229,10 +251,23 @@ $(function () {
    */
   ModelContainer.Model.Article.prototype.renderCondensed = function (bacat) {
     var baart = this.elemTag(this.Render.Condensed.elem);
-    baart += this.createLink({bacat : this.catLocationName, baart : this.locationName},
+    baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
                              "<img src='"+this.imgSrc+"' width='200' height='200' />");
     baart += this.closeElemTag(this.Render.Condensed.elem);
     $(bacat).append(baart);
+    this.addClasses(this.Render.Condensed.classes);
+  };
+
+  /**
+   * Renders the sidebar version of this Article
+   * @namespace BlogApp.Model.Article
+   */
+  ModelContainer.Model.Article.prototype.renderSidebar = function () {
+    var baart = this.elemTag(this.Render.Sidebar.elem);
+    baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
+                            this.displayName);
+    baart += this.closeElemTag(this.Render.Sidebar.elem);
+    $(this.Render.Sidebar.at).append(baart);
     this.addClasses(this.Render.Condensed.classes);
   };
 
@@ -246,8 +281,8 @@ $(function () {
    * @namespace BlogApp.Model.Category
    */
   ModelContainer.Model.Category.prototype.renderCondensed = function () {
-    
-    var bacat = this.elemTag(this.Render.Condensed.elem);
+    var bacat, divider;
+    bacat = this.elemTag(this.Render.Condensed.elem);
     bacat += "<h3>"+this.createLink({bacat : this.locationName},
                                     this.displayName)+"</h3>";
     bacat += "<div class='browse pull-left glyphicon glyphicon-chevron-left' />";
@@ -256,10 +291,41 @@ $(function () {
     bacat += this.closeElemTag(this.Render.Condensed.elem);
     
     $(this.Render.Condensed.at).append(bacat);
-    this.articles.forEach(function(baart, idx, arr) {
+    this.renderCondensedArticles();
+    divider = "<div class='baart art-divider pull-left' />";
+    this.$this().find("div.articles div.scroll").append(divider);
+    this.addClasses(this.Render.Condensed.classes);
+  };
+
+  /**
+   * Renders the condensed articles to display properly in the slider
+   * @namespace BlogApp.Model.Category
+   */
+  ModelContainer.Model.Category.prototype.renderCondensedArticles = function () {
+    var allarts, prearts, postarts;
+    if (this.articles.length >= BlogApp.Util.WINDOWSIZE) {
+      prearts = this.articles.slice(this.articles.length-BlogApp.Util.WINDOWSIZE);
+      prearts = prearts.map(function (art, idx, arr) {
+        return new BlogApp.Model.Article(art.displayName,
+                                         "_pre_"+art.locationName,
+                                         art.catLocationName,
+                                         art.description);
+      });
+      postarts = this.articles.slice(0, BlogApp.Util.WINDOWSIZE);
+      postarts = postarts.map(function (art, idx, arr) {
+        return new BlogApp.Model.Article(art.displayName,
+                                         "_post_"+art.locationName,
+                                         art.catLocationName,
+                                         art.description);        
+      });
+      allarts = prearts.concat(this.articles).concat(postarts);
+    }
+    else {
+      allarts = this.articles;
+    }
+    allarts.forEach(function(baart, idx, arr) {
       baart.renderCondensed(this.id(true)+" div.articles div.scroll");
     }, this);
-    this.addClasses(this.Render.Condensed.classes);
   };
 
   /**
@@ -273,24 +339,29 @@ $(function () {
     bacat += this.closeElemTag(this.Render.Page.elem);
     
     $(this.Render.Page.at).append(bacat);
+
     this.articles.forEach(function (baart, idx, arr) {
       baart.renderCondensed(this.id(true));
     }, this);
     this.addClasses(this.Render.Page.classes);
   };
-  
+
+  /**
+   * Renders the sidebar version of this category
+   * @namespace BlogApp.Model.Category
+   */
+  ModelContainer.Model.Category.prototype.renderSidebar = function () {
+    var bacat = this.elemTag(this.Render.Sidebar.elem);
+    bacat += this.createLink({bacat : this.locationName},
+                             this.displayName);
+    bacat += this.closeElemTag(this.Render.Sidebar.elem);
+    bacat += "<ul class='sidebar-articles' />";
+    $(this.Render.Sidebar.at).append(bacat);
+    this.articles.forEach(function (baart, idx, arr) {
+      baart.renderSidebar();
+    });
+    this.addClasses(this.Render.Sidebar.classes);
+  };
   
   $.extend(BlogApp, ModelContainer);
 });
-
-
-
-
-
-
-
-
-
-
-
-

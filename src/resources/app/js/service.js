@@ -45,11 +45,11 @@ $(function () {
       categoryDone : function (opts) {
         if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.CATEGORY) {
           return function (data, textStatus, jqXHR) {
-            var cat = Parsers.Directory.parseQueryString();
-            console.log(cat);
-            for (var i=0;i<data.categories.length;i++) {
-              var c = data.categories[i];
-              if (c.locationName === cat.bacat) {
+            var cat, c, i;
+            cat = Parsers.parseQueryString().bacat;
+            for (i=0;i<data.categories.length;i++) {
+              c = data.categories[i];
+              if (c.locationName === cat) {
                 if (opts.maxArts > 0)
                   BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderPage();
                 else
@@ -57,6 +57,29 @@ $(function () {
                 break;
               }
             }
+          };
+        }
+        else
+          return ResponseHandlers.noneFunc;
+      },
+
+      articleDone : function (opts) {
+        if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.ARTICLE) {
+          return function (data, textStatus, jqXHR) {
+            var queries, cat, i;
+            queries = Parsers.parseQueryString();
+            for (i=0;i<data.categories.length;i++) {
+              c = data.categories[i];
+              if (c.locationName === queries.bacat) {
+                
+                if (opts.maxArts > 0)
+                  cat = BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderSidebar();
+                else
+                  cat = BlogApp.Model.jsonToCategory()(c).renderSidebar();
+                break;
+              }
+            }
+            BlogApp.Service.loadArticle($.extend(opts, queries));
           };
         }
         else
@@ -74,6 +97,21 @@ $(function () {
           console.error(errorThrown);
         };
       }
+    },
+
+    Article : {
+      articleDone : function (opts) {
+        console.log("article article done");
+        if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.ARTICLE) {
+          return function (data, textStatus, jqXHR) {
+            $(opts.renderAt).append(BlogApp.Converter.makeHtml(data));
+            $(opts.renderAt).find("code").parent().addClass("prettyprint");
+            window.prettyPrint && prettyPrint();
+          };
+        }
+        else
+          return ResponseHandlers.noneFunc;
+      }
     }
   };
 
@@ -90,24 +128,36 @@ $(function () {
       return returnOpts;
     },
 
+    parseQueryString : function () {
+      var params = {}, pairs, pair;
+      pairs = BlogApp.Util.getQueryString().split("&");
+      pairs.forEach(function (p, idx, arr) {
+        pair = p.split("=");
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+      });
+      return params;
+    },
+
     Directory : {
-      parseOpts : function(opts) {
+      parseOpts : function (opts) {
         return Parsers.base(opts, Parsers.Directory.defaultOpts);
       },
       
       defaultOpts : {
         maxCats : 0,
         maxArts : 0
+      }
+    },
+    Article : {
+      parseOpts : function (opts) {
+        Parsers.Article.defaultOpts.renderAt = BlogApp.Util.ARTICLERENDER;
+        return Parsers.base(opts, Parsers.Article.defaultOpts);
       },
 
-      parseQueryString : function () {
-        var params = {}, pairs;
-        pairs = BlogApp.Util.getQueryString().split("&");
-        pairs.forEach(function (p, idx, arr) {
-          var pair = p.split("=");
-          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-        });
-        return params;
+      defaultOpts : {
+        bacat : "",
+        baart : "",
+        renderAt : ""
       }
     }
   };
@@ -126,11 +176,22 @@ $(function () {
         })
           .done(ResponseHandlers.Directory.mainDone(opts))
           .done(ResponseHandlers.Directory.categoryDone(opts))
+          .done(ResponseHandlers.Directory.articleDone(opts))
           .fail(ResponseHandlers.Directory.fail(opts));
+      },
+
+      loadArticle : function (opts) {
+        console.log("loading article;");
+        opts = Parsers.Article.parseOpts(opts);
+        $.ajax({
+          url : BlogApp.Util.ARTICLEPATH+opts.bacat+"/"+opts.baart+".md",
+          type : "GET",
+          dataTaype : "text",
+          cache : false
+        })
+          .done(ResponseHandlers.Article.articleDone(opts));
       }
-      
     }
-    
   };
 
   $.extend(BlogApp, ServiceContainer);

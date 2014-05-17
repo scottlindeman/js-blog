@@ -1,10 +1,12 @@
 $(function () {
-  var UtilContainer;
   
-  UtilContainer = {
+  var UtilContainer = {
     Util : {
       DIRPATH : "/directory.json",
       ARTICLEPATH : "/resources/app/documents/",
+      IMAGEPATH : "/resources/app/images/",
+      ARTICLERENDER : "section#article-content",
+      WINDOWSIZE : 4,
       PAGES : {
         ARTICLE : "article",
         CATEGORY : "category",
@@ -26,5 +28,6 @@ $(function () {
       }
     }
   };
+
   $.extend(BlogApp, UtilContainer);
 });
