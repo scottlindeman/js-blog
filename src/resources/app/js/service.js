@@ -101,12 +101,25 @@ $(function () {
 
     Article : {
       articleDone : function (opts) {
-        console.log("article article done");
         if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.ARTICLE) {
           return function (data, textStatus, jqXHR) {
             $(opts.renderAt).append(BlogApp.Converter.makeHtml(data));
             $(opts.renderAt).find("code").parent().addClass("prettyprint");
             window.prettyPrint && prettyPrint();
+            //TODO: FIX STRINGS AND NUMBERS
+            $(opts.sidebar).height($(opts.contentWrapper).height()+20);
+
+            function sidebarTweaks () {
+              var sb = $(opts.sidebar), sbwidth = sb.width(),
+                  cw = $(opts.contentWrapper), cwmarginleft = parseFloat(cw.css("margin-left"));
+              if (sbwidth <= opts.sidebarWidth && sbwidth >= cwmarginleft)
+                sb.css("border-right", "1px solid #ccc");
+              else {
+                sb.css("border-right", "none").width(cwmarginleft);
+              }
+            }
+            sidebarTweaks();
+            $(window).resize(sidebarTweaks);
           };
         }
         else
@@ -157,7 +170,10 @@ $(function () {
       defaultOpts : {
         bacat : "",
         baart : "",
-        renderAt : ""
+        renderAt : "",
+        sidebar : "#article-sidebar",
+        sidebarWidth : 250,
+        contentWrapper : ".article-content-wrapper"
       }
     }
   };
@@ -181,7 +197,6 @@ $(function () {
       },
 
       loadArticle : function (opts) {
-        console.log("loading article;");
         opts = Parsers.Article.parseOpts(opts);
         $.ajax({
           url : BlogApp.Util.ARTICLEPATH+opts.bacat+"/"+opts.baart+".md",
