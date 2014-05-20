@@ -8,8 +8,8 @@ SRCDIR=$BASE"src/"
 echo 'Processing Resources...'
 
 echo 'Minifying...'
-./utils/scripts/jscompress.sh $SRCDIR"resources/app/js/" $TEMPDIR"js/" "app.js"
-./utils/scripts/csscompress.sh $SRCDIR"resources/app/css/" $TEMPDIR"css/" "app.css"
+./utils/scripts/jscompress $SRCDIR"resources/app/js/" $TEMPDIR"js/" "app.js"
+./utils/scripts/csscompress $SRCDIR"resources/app/css/" $TEMPDIR"css/" "app.css"
 
 echo 'Copying...'
 
