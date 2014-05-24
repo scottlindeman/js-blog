@@ -56,13 +56,19 @@ div#main-page-content.all-categories > section.categories > article.bacat > div.
   width: 20000px;
 }
 
-div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.baart {
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart,
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.copied-arts > div.baart {
+  width: 200px;
+  height: 200px;
   margin: 0px 10px;
 }
 
-div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.baart.art-divider {
-  width: 10px;
-  height: 180px;
-  border-left: 1px dashed #aaa;
-  margin: 10px;
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart.empty-baart > div.art-divider,
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.copied-arts > div.baart.empty-baart > div.art-divider{
+  width: 1px;
+  height: 80%;
+  border-left: 2px dashed #ccc;
+  margin-left: 50%;
+  margin-top: 10%;
 }
+

@@ -93,10 +93,14 @@ $(function () {
       },
 
       setupArticleHover : function () {
-        var scrollInterval, scrollIntervalLength = 25;
+        var scrollInterval, scrollIntervalLength = 15, scrollSpeed = 3;;
 
         function performArticleAnimation (scrollArea, increment) {
-          scrollArea.animate({"margin-left" : increment}, 10);
+          var children = scrollArea.find("div.initial-arts").children(),
+              totalWidth = -(children.length * (children.width() + 20)) * BlogApp.Util.SLIDERREPEAT;
+          if (!(increment > 0 && parseFloat(scrollArea.css("margin-left")) >= 0) &&
+              !(increment < 0 && parseFloat(scrollArea.css("margin-left")) <= totalWidth))
+            scrollArea.animate({"margin-left" : "+="+increment+"px"}, 10);
         }
 
         function stopAnimation () {
@@ -105,10 +109,7 @@ $(function () {
 
         function startAnimation (browseButton, increment) {
           var scroll = browseButton.parent().find("div.scroll");
-          if (scroll.children().length >= BlogApp.Util.WINDOWSIZE) {
-            if (parseInt(scroll.css("margin-left")) >= -5) {
-              
-            }
+          if (scroll.find("div.initial-arts").children().length >= BlogApp.Util.WINDOWSIZE) {
             scrollInterval = window.setInterval(function () {
               performArticleAnimation(scroll, increment);
             }, scrollIntervalLength);
@@ -117,13 +118,13 @@ $(function () {
         
         $("div.browse.pull-right").hover(
           function () {
-            startAnimation($(this), "-=3px");
+            startAnimation($(this), -scrollSpeed);
           },
           stopAnimation);
         
         $("div.browse.pull-left").hover(
           function () {
-            startAnimation($(this), "+=3px");
+            startAnimation($(this), scrollSpeed);
           },
           stopAnimation);
       }
@@ -253,6 +254,10 @@ $(function () {
     var baart = this.elemTag(this.Render.Condensed.elem);
     baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
                              "<img src='"+this.imgSrc+"' width='200' height='200' />");
+    baart += "<div class='baart-info'>";
+    baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
+                             "<h5>"+this.displayName+"</h5>");
+    baart += "</div>";
     baart += this.closeElemTag(this.Render.Condensed.elem);
     $(bacat).append(baart);
     this.addClasses(this.Render.Condensed.classes);
@@ -281,19 +286,17 @@ $(function () {
    * @namespace BlogApp.Model.Category
    */
   ModelContainer.Model.Category.prototype.renderCondensed = function () {
-    var bacat, divider;
+    var bacat;
     bacat = this.elemTag(this.Render.Condensed.elem);
     bacat += "<h3>"+this.createLink({bacat : this.locationName},
                                     this.displayName)+"</h3>";
     bacat += "<div class='browse pull-left glyphicon glyphicon-chevron-left' />";
-    bacat += "<div class='articles'><div class='scroll' /></div>";
+    bacat += "<div class='articles'><div class='scroll'><div class='initial-arts' /></div></div>";
     bacat += "<div class='browse pull-right glyphicon glyphicon-chevron-right' />";
     bacat += this.closeElemTag(this.Render.Condensed.elem);
     
     $(this.Render.Condensed.at).append(bacat);
     this.renderCondensedArticles();
-    divider = "<div class='baart art-divider pull-left' />";
-    this.$this().find("div.articles div.scroll").append(divider);
     this.addClasses(this.Render.Condensed.classes);
   };
 
@@ -302,30 +305,18 @@ $(function () {
    * @namespace BlogApp.Model.Category
    */
   ModelContainer.Model.Category.prototype.renderCondensedArticles = function () {
-    var allarts, prearts, postarts;
-    if (this.articles.length >= BlogApp.Util.WINDOWSIZE) {
-      prearts = this.articles.slice(this.articles.length-BlogApp.Util.WINDOWSIZE);
-      prearts = prearts.map(function (art, idx, arr) {
-        return new BlogApp.Model.Article(art.displayName,
-                                         "_pre_"+art.locationName,
-                                         art.catLocationName,
-                                         art.description);
-      });
-      postarts = this.articles.slice(0, BlogApp.Util.WINDOWSIZE);
-      postarts = postarts.map(function (art, idx, arr) {
-        return new BlogApp.Model.Article(art.displayName,
-                                         "_post_"+art.locationName,
-                                         art.catLocationName,
-                                         art.description);        
-      });
-      allarts = prearts.concat(this.articles).concat(postarts);
-    }
-    else {
-      allarts = this.articles;
-    }
-    allarts.forEach(function(baart, idx, arr) {
-      baart.renderCondensed(this.id(true)+" div.articles div.scroll");
+    this.articles.forEach(function(baart, idx, arr) {
+      baart.renderCondensed(this.id(true)+" div.articles div.scroll div.initial-arts");
     }, this);
+
+    if (this.articles.length >= BlogApp.Util.WINDOWSIZE) {
+      var cat = this.$this().find("div.articles div.scroll div.initial-arts"), emptyArt, i;
+      emptyArt = "<div class='baart empty-baart pull-left'><div class='art-divider'/></div>";
+      cat.append(emptyArt);
+      for (i=0;i<BlogApp.Util.SLIDERREPEAT;i++) {
+        cat.parent().append("<div class='copied-arts'>"+cat.html()+"</div>");
+      }
+    }
   };
 
   /**

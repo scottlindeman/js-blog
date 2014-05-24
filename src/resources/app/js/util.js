@@ -7,6 +7,7 @@ $(function () {
       IMAGEPATH : "/resources/app/images/",
       ARTICLERENDER : "section#article-content",
       WINDOWSIZE : 4,
+      SLIDERREPEAT : 7,
       PAGES : {
         ARTICLE : "article",
         CATEGORY : "category",
