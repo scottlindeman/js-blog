@@ -5,10 +5,16 @@
 /*CONTENT*/
 
 div.category > section.bacat > div.baart {
+  width: 300px;
+  height: 300px;
   margin: 40px;
 }
 
 div.category > section.bacat > div.baart > a > img {
   width: 300px;
   height: 300px;
+}
+
+div.category > section.bacat > div.baart > div.baart-info h5 {
+  font-size: 20px;
 }

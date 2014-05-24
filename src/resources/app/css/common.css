@@ -23,3 +23,28 @@ header.blog-header > div > h1 > a:visited {
   color: #fff;
   text-decoration: none;
 }
+
+/* CONDENSED ARTICLES */
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart > a,
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.copied-arts > div.baart > a,
+div.category > section.bacat > div.baart > a {
+  display: inline-block;
+}
+
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart > div.baart-info,
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.copied-arts > div.baart > div.baart-info,
+div.category > section.bacat > div.baart > div.baart-info {
+  height: 33%;
+  margin-top: -33%;
+  position: relative;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  background-image: url(/resources/app/images/title-transparency.png);
+}
+
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart > div.baart-info > a,
+div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.copied-arts > div.baart > div.baart-info > a,
+div.category > section.bacat > div.baart > div.baart-info > a {
+  color: #fff;
+}
