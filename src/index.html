@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Main Page</title>
+    <title>Change this title</title>
 
     <link type="text/css" rel="stylesheet" href="/resources/vendor/css/bootstrap.css" />
     <link type="text/css" rel="stylesheet" href="/resources/app/css/app.css" />
@@ -14,13 +14,7 @@
 
   <body>
 
-    <header id="main-page-header" class="blog-header page-header">
-      <div class="container">
-        <h1>
-          <a href="/">Blog Title</a>
-        </h1>
-      </div>
-    </header>
+    <header id="main-page-header" class="blog-header page-header"></header>
     
     <div class="container">
       
@@ -29,14 +23,14 @@
           
         </section>
       </div>
-      
-      <footer></footer>
       <script type="text/javascript">
         $(function () {
-          BlogApp.Service.loadDirectory();
+          BlogApp.Service.initialize();
         });
       </script>
     </div>
+
+    <footer id="main-page-footer" class="blog-footer"></footer>
     
   </body>
 </html>
