@@ -50,6 +50,7 @@ $(function () {
             for (i=0;i<data.categories.length;i++) {
               c = data.categories[i];
               if (c.locationName === cat) {
+                $("title").append(" | "+c.displayName);
                 if (opts.maxArts > 0)
                   BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderPage();
                 else
@@ -62,21 +63,34 @@ $(function () {
         else
           return ResponseHandlers.noneFunc;
       },
-
+      /**
+       * Handles the directory response when called from the article page.
+       * Launches the loadArticle process.
+       * @namespace ResponseHandlers.Directory
+       * @param {Object} opts
+       * @return {Function}
+       */
       articleDone : function (opts) {
         if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.ARTICLE) {
           return function (data, textStatus, jqXHR) {
-            var queries, cat, i;
+            var queries, cat, art, c, i, j;
             queries = Parsers.parseQueryString();
             for (i=0;i<data.categories.length;i++) {
               c = data.categories[i];
               if (c.locationName === queries.bacat) {
-                
                 if (opts.maxArts > 0)
-                  cat = BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderSidebar();
+                  cat = BlogApp.Model.jsonToCategory(opts.maxArts)(c);
                 else
-                  cat = BlogApp.Model.jsonToCategory()(c).renderSidebar();
-                break;
+                  cat = BlogApp.Model.jsonToCategory()(c);
+                cat.renderSidebar();
+                for (j=0;j<cat.articles.length;j++) {
+                  art = cat.articles[j];
+                  if (art.locationName === queries.baart) {
+                    $("title").append(" | "+art.displayName);
+                    break;
+                  }
+                  break;
+                }
               }
             }
             BlogApp.Service.loadArticle($.extend(opts, queries));
@@ -100,14 +114,20 @@ $(function () {
     },
 
     Article : {
+      /**
+       * Handles the loading of an article response. Renders the article page.
+       * @namespace ResponseHandlers.Article
+       * @param {Object} opts
+       * @return {Function}
+       */
       articleDone : function (opts) {
         if (BlogApp.Util.getPageName() === BlogApp.Util.PAGES.ARTICLE) {
           return function (data, textStatus, jqXHR) {
             $(opts.renderAt).append(BlogApp.Converter.makeHtml(data));
             $(opts.renderAt).find("code").parent().addClass("prettyprint");
             window.prettyPrint && prettyPrint();
-            //TODO: FIX STRINGS AND NUMBERS
-            $(opts.sidebar).height($(opts.contentWrapper).height()+20);
+
+            $(opts.sidebar).height($(opts.contentWrapper).height()+40);
 
             function sidebarTweaks () {
               var sb = $(opts.sidebar), sbwidth = sb.width(),
@@ -129,6 +149,13 @@ $(function () {
   };
 
   Parsers = {
+    /**
+     * Given an Object of options, makes sure that Object has all the
+     * default options
+     * @param {Object} opts
+     * @param {Object} defaultOpts
+     * @return {Object}
+     */
     base : function (opts, defaultOpts) {
       opts = opts || {};
       var returnOpts = {};
@@ -140,7 +167,10 @@ $(function () {
       }
       return returnOpts;
     },
-
+    /**
+     * Grabs the querystring from the current url and parses it into an object
+     * @return {Object}
+     */
     parseQueryString : function () {
       var params = {}, pairs, pair;
       pairs = BlogApp.Util.getQueryString().split("&");
@@ -152,6 +182,11 @@ $(function () {
     },
 
     Directory : {
+      /**
+       * Creates the object of options for the Directory handler
+       * @param {Object} opts
+       * @return {Object}
+       */
       parseOpts : function (opts) {
         return Parsers.base(opts, Parsers.Directory.defaultOpts);
       },
@@ -162,6 +197,11 @@ $(function () {
       }
     },
     Article : {
+      /**
+       * Creates the object of options for the Article handler
+       * @param {Object} opts
+       * @return {Object}
+       */
       parseOpts : function (opts) {
         Parsers.Article.defaultOpts.renderAt = BlogApp.Util.ARTICLERENDER;
         return Parsers.base(opts, Parsers.Article.defaultOpts);
@@ -181,7 +221,12 @@ $(function () {
   ServiceContainer = {
 
     Service : {
-
+      /**
+       * Pulls the directory.json from the server and applies the proper
+       * completion function
+       * @namespace BlogApp.Service
+       * @param {Object} opts
+       */
       loadDirectory : function (opts) {
         opts = Parsers.Directory.parseOpts(opts);
         $.ajax({
@@ -195,7 +240,11 @@ $(function () {
           .done(ResponseHandlers.Directory.articleDone(opts))
           .fail(ResponseHandlers.Directory.fail(opts));
       },
-
+      /**
+       * Finds the correct article to display
+       * @namespace BlogApp.Service
+       * @param {Object} opts
+       */
       loadArticle : function (opts) {
         opts = Parsers.Article.parseOpts(opts);
         $.ajax({
@@ -205,6 +254,19 @@ $(function () {
           cache : false
         })
           .done(ResponseHandlers.Article.articleDone(opts));
+      },
+      /**
+       * The first function called on each page.
+       * Loads the header and footer templates.
+       * Begins reading the directory.json.
+       * @namespace BlogApp.Service
+       * @param {Object} opts
+       *
+       */
+      initialize : function (opts) {
+        BlogApp.Service.loadDirectory(opts);
+        $("header.blog-header").load("/resources/app/templates/header.html");
+        $("footer.blog-footer").load("/resources/app/templates/footer.html");
       }
     }
   };

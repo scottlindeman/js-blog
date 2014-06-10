@@ -4,7 +4,8 @@
 
 /*HEADER*/
 
-header.blog-header {
+header.blog-header,
+footer.blog-footer {
   background-color: #428bca;
   height: 200px;
   margin: 0px 0px 20px;
@@ -22,6 +23,11 @@ header.blog-header > div > h1 > a:hover,
 header.blog-header > div > h1 > a:visited {
   color: #fff;
   text-decoration: none;
+}
+
+/*FOOTER*/
+footer.blog-footer {
+  margin: 20px 0px 0px;
 }
 
 /* CONDENSED ARTICLES */

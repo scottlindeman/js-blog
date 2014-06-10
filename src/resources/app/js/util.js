@@ -13,7 +13,10 @@ $(function () {
         CATEGORY : "category",
         HOME : "/"
       },
-
+      /*
+       * Returns the name of the current page
+       * @return {String}
+       */
       getPageName : function () {
         var htmlPatt, loc;
         htmlPatt = /.*(?=.html)/i;
@@ -24,6 +27,10 @@ $(function () {
           return loc[0].substring(1);
       },
 
+      /*
+       * Returns the current query string
+       * @return {String}
+       */
       getQueryString : function () {
         return window.location.href.split("?")[1];
       }
