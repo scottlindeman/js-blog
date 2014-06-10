@@ -149,6 +149,13 @@ $(function () {
   };
 
   Parsers = {
+    /**
+     * Given an Object of options, makes sure that Object has all the
+     * default options
+     * @param {Object} opts
+     * @param {Object} defaultOpts
+     * @return {Object}
+     */
     base : function (opts, defaultOpts) {
       opts = opts || {};
       var returnOpts = {};
@@ -160,7 +167,10 @@ $(function () {
       }
       return returnOpts;
     },
-
+    /**
+     * Grabs the querystring from the current url and parses it into an object
+     * @return {Object}
+     */
     parseQueryString : function () {
       var params = {}, pairs, pair;
       pairs = BlogApp.Util.getQueryString().split("&");
@@ -172,6 +182,11 @@ $(function () {
     },
 
     Directory : {
+      /**
+       * Creates the object of options for the Directory handler
+       * @param {Object} opts
+       * @return {Object}
+       */
       parseOpts : function (opts) {
         return Parsers.base(opts, Parsers.Directory.defaultOpts);
       },
@@ -182,6 +197,11 @@ $(function () {
       }
     },
     Article : {
+      /**
+       * Creates the object of options for the Article handler
+       * @param {Object} opts
+       * @return {Object}
+       */
       parseOpts : function (opts) {
         Parsers.Article.defaultOpts.renderAt = BlogApp.Util.ARTICLERENDER;
         return Parsers.base(opts, Parsers.Article.defaultOpts);

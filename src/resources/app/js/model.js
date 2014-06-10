@@ -91,7 +91,10 @@ $(function () {
                                             arts.map(BlogApp.Model.jsonToArticle(jsonCategory.locationName)));
         };
       },
-
+      /**
+       * Attaches the "infinite" scrolling hover events to the arrow buttons
+       * on the index page.
+       */
       setupArticleHover : function () {
         var scrollInterval, scrollIntervalLength = 15, scrollSpeed = 3;;
 
