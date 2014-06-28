@@ -18,13 +18,14 @@ $(function () {
        * @return {String}
        */
       getPageName : function () {
-        var htmlPatt, loc;
+        var htmlPatt, locs, loc;
         htmlPatt = /.*(?=.html)/i;
-        loc = window.location.pathname.match(htmlPatt);
+        locs = window.location.pathname.split("/");
+        loc = locs[locs.length-1].match(htmlPatt);
         if (loc === null)
           return BlogApp.Util.PAGES.HOME;
         else
-          return loc[0].substring(1);
+          return loc[0];
       },
 
       /*
