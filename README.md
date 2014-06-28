@@ -3,6 +3,8 @@ js-blog
 
 A frontend blog with blog posts can be categories and are written in markdown.
 
+See a sample [here](http://scottlindeman.github.io/js-blog/).
+
 Installation
 ------------
 
@@ -30,14 +32,6 @@ In order for the categories and articles to be seen by the app, you must add the
                     {
                         "displayName"  : "Test Article 2",
                         "locationName" : "test-article-2"
-                    },
-                    {
-                        "displayName"  : "Test Article 3",
-                        "locationName" : "test-article-5"
-                    },
-                    {
-                        "displayName"  : "Test Article 4",
-                        "locationName" : "test-article-6"
                     }
                 ]
             },
@@ -48,10 +42,6 @@ In order for the categories and articles to be seen by the app, you must add the
                     {
                         "displayName"  : "Test Article 1",
                         "locationName" : "test-article-3"
-                    },
-                    {
-                        "displayName"  : "Test Article 2",
-                        "locationName" : "test-article-4"
                     }
                 ]
             }
@@ -59,5 +49,12 @@ In order for the categories and articles to be seen by the app, you must add the
     }
 
 This file contains a simple mapping for categories and articles. Each category should have a `displayName`, a `locationName`, and a list of `articles`. Articles have a `displayName` and a `locationName`. In both cases, the `displayName` attribute tells the app that name that should be displayed on the web page. The `locationName` attribute tells the app where to locate the category or article within the `resources/app/documents` folder. For categories, this is the name of the folder. For articles, this is the name of the markdown file. **NOTE:** Be sure to keep category and article names unique!
+
+Articles will display with a default image when viewing them from `/` or `/category`. To use your own image, supply a .png with the *locationName* of your article in the `resources/app/images` directory.
+
+Configuration
+-------------
+
+The blog title, header and footer can be customized. The templates for these pieces of the blog are located in the `resources/app/templates` directory. If your blog is being hosted somewhere other than `/`, you can modify this in the header template.
 
     
