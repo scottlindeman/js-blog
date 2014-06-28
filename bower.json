@@ -1,0 +1,7 @@
+{
+  "name": "js-blog",
+  "dependencies": {
+    "bootstrap": "~3.2.0",
+    "ember": "~1.5.1"
+  }
+}
