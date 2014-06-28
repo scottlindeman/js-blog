@@ -30,6 +30,7 @@ $(function () {
               c.renderCondensed();
             });
             BlogApp.Model.setupArticleHover();
+            BlogApp.Model.setupArticleImageError();
           };
         }
         else
@@ -58,6 +59,7 @@ $(function () {
                 break;
               }
             }
+            BlogApp.Model.setupArticleImageError();
           };
         }
         else

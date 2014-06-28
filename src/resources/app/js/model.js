@@ -13,7 +13,7 @@ $(function () {
        * @param {String} catLocationName
        * @param {String} description
        */
-      //Add img source
+
       Article : function (displayName, locationName, catLocationName, description) {
         this.displayName = displayName;
         this.locationName = locationName;
@@ -24,7 +24,7 @@ $(function () {
         this.Render.Sidebar.at = "ul.sidebar-articles";
         this.Render.Sidebar.elem = "li";
         this.Render.Sidebar.classes = ["baart"];
-        this.imgSrc = BlogApp.Util.IMAGEPATH+"default.png";
+        this.imgSrc = BlogApp.Util.IMAGEPATH+locationName+".png";
         this.modelType = "baart";
         this.linkPage = "article.html";
       },
@@ -130,6 +130,15 @@ $(function () {
             startAnimation($(this), scrollSpeed);
           },
           stopAnimation);
+      },
+
+      /**
+       * Attaches an onerror function to article images
+       */
+      setupArticleImageError : function () {
+        $("div.baart img").error(function () {
+          $(this).attr("src", BlogApp.Util.IMAGEPATH+"default.png");
+        });
       }
     }
   };
@@ -257,6 +266,7 @@ $(function () {
     var baart = this.elemTag(this.Render.Condensed.elem);
     baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
                              "<img src='"+this.imgSrc+"' width='200' height='200' />");
+    console.log(this.imgSrc);
     baart += "<div class='baart-info'>";
     baart += this.createLink({bacat : this.catLocationName, baart : this.scrubbedLocationName()},
                              "<h5>"+this.displayName+"</h5>");
