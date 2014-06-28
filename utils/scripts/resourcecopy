@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE=$HOME"/workspace/web/js-blog/"
+BASE=$HOME"/workspace/personal/web/js-blog/"
 APPDIR=$BASE"target/app/"
 TEMPDIR=$BASE"target/temp/"
 SRCDIR=$BASE"src/"
