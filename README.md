@@ -58,6 +58,6 @@ In order for the categories and articles to be seen by the app, you must add the
         ]
     }
 
-This file contains a simple mapping for categories and articles. Each category should have a `displayName`, a `locationName`, and a list of `articles`. Articles have a `displayName` and a `locationName`. In both cases, the `displayName` attribute tells the app that name that should be displayed on the page. The `locationName` attribute tells the app where to locate the category or article within the `resources/app/documents` folder. For categories, this is the name of the folder. For articles, this is the name of the markdown file.
+This file contains a simple mapping for categories and articles. Each category should have a `displayName`, a `locationName`, and a list of `articles`. Articles have a `displayName` and a `locationName`. In both cases, the `displayName` attribute tells the app that name that should be displayed on the web page. The `locationName` attribute tells the app where to locate the category or article within the `resources/app/documents` folder. For categories, this is the name of the folder. For articles, this is the name of the markdown file. **NOTE:** Be sure to keep category and article names unique!
 
     
