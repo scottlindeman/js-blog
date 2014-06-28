@@ -2,9 +2,10 @@ $(function () {
   
   var UtilContainer = {
     Util : {
-      DIRPATH : "/directory.json",
-      ARTICLEPATH : "/resources/app/documents/",
-      IMAGEPATH : "/resources/app/images/",
+      DIRPATH : "directory.json",
+      ARTICLEPATH : "resources/app/documents/",
+      IMAGEPATH : "resources/app/images/",
+      TEMPLATEPATH : "resources/app/templates/",
       ARTICLERENDER : "section#article-content",
       WINDOWSIZE : 4,
       SLIDERREPEAT : 7,
@@ -13,7 +14,7 @@ $(function () {
         CATEGORY : "category",
         HOME : "/"
       },
-      /*
+      /**
        * Returns the name of the current page
        * @return {String}
        */
@@ -28,12 +29,22 @@ $(function () {
           return loc[0];
       },
 
-      /*
+      /**
        * Returns the current query string
        * @return {String}
        */
       getQueryString : function () {
         return window.location.href.split("?")[1];
+      },
+
+      /**
+       * Appends the given string to the title
+       * @param {String}
+       */
+      setTitle : function (titleAppendage) {
+        window.setTimeout(function () {
+          $("title").append(" | "+titleAppendage);
+        }, 500);
       }
     }
   };

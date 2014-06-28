@@ -50,7 +50,7 @@ $(function () {
             for (i=0;i<data.categories.length;i++) {
               c = data.categories[i];
               if (c.locationName === cat) {
-                $("title").append(" | "+c.displayName);
+                BlogApp.Util.setTitle(c.displayName);
                 if (opts.maxArts > 0)
                   BlogApp.Model.jsonToCategory(opts.maxArts)(c).renderPage();
                 else
@@ -85,11 +85,12 @@ $(function () {
                 cat.renderSidebar();
                 for (j=0;j<cat.articles.length;j++) {
                   art = cat.articles[j];
+                  console.log(art.locationName);
+                  console.log(queries.baart);
                   if (art.locationName === queries.baart) {
-                    $("title").append(" | "+art.displayName);
+                    BlogApp.Util.setTitle(art.displayName);
                     break;
                   }
-                  break;
                 }
               }
             }
@@ -265,8 +266,9 @@ $(function () {
        */
       initialize : function (opts) {
         BlogApp.Service.loadDirectory(opts);
-        $("header.blog-header").load("/resources/app/templates/header.html");
-        $("footer.blog-footer").load("/resources/app/templates/footer.html");
+        $("header.blog-header").load(BlogApp.Util.TEMPLATEPATH+"header.html");
+        $("footer.blog-footer").load(BlogApp.Util.TEMPLATEPATH+"footer.html");
+        $("head > title").load(BlogApp.Util.TEMPLATEPATH+"title.html");
       }
     }
   };
