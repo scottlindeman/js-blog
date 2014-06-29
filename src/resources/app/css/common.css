@@ -28,6 +28,18 @@ header.blog-header > div > h1 > a:visited {
 /*FOOTER*/
 footer.blog-footer {
   margin: 20px 0px 0px;
+  color: #fff;
+}
+
+footer.blog-footer > div.footnote {
+  text-align: center;
+  font-size: 10px;
+  padding-top: 186px;
+}
+
+footer.blog-footer > div.footnote a {
+  color: #fff;
+  font-weight: bold;
 }
 
 /* CONDENSED ARTICLES */
@@ -46,7 +58,7 @@ div.category > section.bacat > div.baart > div.baart-info {
   padding: 10px;
   text-align: center;
   color: #fff;
-  background-image: url(/resources/app/images/title-transparency.png);
+  background-image: url(../images/title-transparency.png);
 }
 
 div#main-page-content.all-categories > section.categories > article.bacat > div.articles > div.scroll > div.initial-arts > div.baart > div.baart-info > a,
