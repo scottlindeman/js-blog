@@ -1,6 +1,16 @@
 {
   "categories" : [
     {
+      "displayName" : "js-blog",
+      "locationName": "js-blog",
+      "articles"    : [
+        {
+          "displayName"  : "README",
+          "locationName" : "README"
+        }
+      ]
+    },
+    {
       "displayName"  : "Test Category 1",
       "locationName" : "test-category-1",
       "articles"     : [
@@ -11,14 +21,6 @@
         {
           "displayName"  : "Test Article 2",
           "locationName" : "test-article-2"
-        },
-        {
-          "displayName"  : "Test Article 3",
-          "locationName" : "test-article-5"
-        },
-        {
-          "displayName"  : "Test Article 4",
-          "locationName" : "test-article-6"
         }
       ]
     },
@@ -29,10 +31,6 @@
         {
           "displayName"  : "Test Article 1",
           "locationName" : "test-article-3"
-        },
-        {
-          "displayName"  : "Test Article 2",
-          "locationName" : "test-article-4"
         }
       ]
     }
