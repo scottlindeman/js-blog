@@ -1,7 +1,7 @@
 js-blog
 =======
 
-A frontend blog with blog posts can be categories and are written in markdown.
+A frontend blog with posts are written in markdown.
 
 See a sample [here](http://scottlindeman.github.io/js-blog/).
 
