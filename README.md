@@ -8,7 +8,7 @@ See a sample [here](http://scottlindeman.github.io/js-blog/).
 Installation
 ------------
 
-To deploy a copy of this app to a server, download a zip of the latests release here: .
+To deploy a copy of this app to a server, download a zip of the latests release [here](https://github.com/scottlindeman/js-blog/releases/tag/v0.1.0).
 
 If you're using Apache or Nginx, place the contents of the zip into the respective www folder. Set up any Apache config as you see fit.
 
